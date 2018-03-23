@@ -44,13 +44,42 @@ resource "aws_codebuild_project" "codebuild_project" {
 
   environment {
     compute_type = "BUILD_GENERAL1_SMALL"
-    image        = "aws/codebuild/ubuntu-base:14.04"
+    image        = "aws/codebuild/docker:17.09.0"
     type         = "LINUX_CONTAINER"
+    privileged_mode = "true"
   }
 
   source {
     type      = "GITHUB"
     location  = "${var.source_repository["https_url"]}"
+    buildspec = <<EOF
+    version: 0.2
+
+    phases:
+      pre_build:
+        commands:
+          - echo Logging in to Amazon ECR...
+          - aws --version
+          - $(aws ecr get-login --region us-east-1 --no-include-email)
+          - REPOSITORY_URI=${aws_ecr_repository.webops-redirect-server.repository_url}
+          - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      build:
+        commands:
+          - echo Build started on `date`
+          - echo Building the Docker image...
+          - docker build -t $REPOSITORY_URI:latest .
+          - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      post_build:
+        commands:
+          - echo Build completed on `date`
+          - echo Pushing the Docker images...
+          - docker push $REPOSITORY_URI:latest
+          - docker push $REPOSITORY_URI:$IMAGE_TAG
+          - echo Writing image definitions file...
+          - printf '[{"name":"redirects-container-tf","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+    artifacts:
+        files: imagedefinitions.json
+  EOF
   }
 
   tags = "${var.webops_tags}"
