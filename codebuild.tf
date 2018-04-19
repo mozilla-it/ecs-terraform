@@ -43,15 +43,16 @@ resource "aws_codebuild_project" "codebuild_project" {
   }
 
   environment {
-    compute_type = "BUILD_GENERAL1_SMALL"
-    image        = "aws/codebuild/docker:17.09.0"
-    type         = "LINUX_CONTAINER"
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "aws/codebuild/docker:17.09.0"
+    type            = "LINUX_CONTAINER"
     privileged_mode = "true"
   }
 
   source {
-    type      = "GITHUB"
-    location  = "${var.source_repository["https_url"]}"
+    type     = "GITHUB"
+    location = "${var.source_repository["https_url"]}"
+
     buildspec = <<EOF
     version: 0.2
 
@@ -76,7 +77,7 @@ resource "aws_codebuild_project" "codebuild_project" {
           - docker push $REPOSITORY_URI:latest
           - docker push $REPOSITORY_URI:$IMAGE_TAG
           - echo Writing image definitions file...
-          - printf '[{"name":"redirects-container-tf","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+          - printf '[{"name":"webops-redirect-server","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
     artifacts:
         files: imagedefinitions.json
   EOF

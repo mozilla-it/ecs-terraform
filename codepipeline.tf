@@ -58,12 +58,13 @@ resource "aws_codepipeline" "codepipeline_resource" {
     name = "Build"
 
     action {
-      name            = "Build"
-      category        = "Build"
-      owner           = "AWS"
-      provider        = "CodeBuild"
-      input_artifacts = ["jekyll_blog_source"]
-      version         = "1"
+      name             = "Build"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["jekyll_blog_source"]
+      output_artifacts = ["BuildOutput"]
+      version          = "1"
 
       configuration {
         ProjectName = "${var.service_name}"
@@ -75,14 +76,17 @@ resource "aws_codepipeline" "codepipeline_resource" {
     name = "Deploy"
 
     action {
-      name     = "Deploy"
-      category = "Deploy"
-      owner    = "AWS"
-      provider = "ECS"
-      version  = "1"
+      name            = "Deploy"
+      category        = "Deploy"
+      owner           = "AWS"
+      provider        = "ECS"
+      version         = "1"
+      input_artifacts = ["BuildOutput"]
 
       configuration {
-        ProjectName = "ECSDeployment"
+        ClusterName = "webops-cluster-production"
+        FileName    = "imagedefinitions.json"
+        ServiceName = "redirects"
       }
     }
   }
