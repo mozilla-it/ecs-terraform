@@ -14,7 +14,7 @@ data "template_file" "codepipeline_policy_template" {
 }
 
 resource "aws_iam_role" "codepipeline_service_role" {
-  name = "webops-codepipeline_${var.service_name}_role"
+  name               = "webops-codepipeline_${var.service_name}_role"
   assume_role_policy = "${file("./iam/codepipeline-role.txt")}"
 }
 
@@ -69,5 +69,9 @@ resource "aws_codepipeline" "codepipeline_resource" {
         ProjectName = "${var.service_name}"
       }
     }
+  }
+
+  stage {
+    name = "Deployment"
   }
 }
