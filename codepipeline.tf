@@ -72,6 +72,18 @@ resource "aws_codepipeline" "codepipeline_resource" {
   }
 
   stage {
-    name = "Deployment"
+    name = "Deploy"
+
+    action {
+      name     = "Deploy"
+      category = "Deploy"
+      owner    = "AWS"
+      provider = "ECS"
+      version  = "1"
+
+      configuration {
+        ProjectName = "ECSDeployment"
+      }
+    }
   }
 }
