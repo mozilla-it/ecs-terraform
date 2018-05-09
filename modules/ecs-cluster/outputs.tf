@@ -5,3 +5,7 @@ output "cluster_id" {
 output "ecs_subnets" {
   value = "${aws_subnet.ecs-subnet1.id}"
 }
+
+output "awsvpc_sg" {
+  value = "${aws_security_group.ec2-sg.id}"
+}

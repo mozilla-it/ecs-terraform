@@ -27,4 +27,5 @@ module "ecs-service" {
   service_name = "webops-redirects"
   cluster_id   = "${module.ecs-cluster.cluster_id}"
   ecs_subnets  = "${module.ecs-cluster.ecs_subnets}"
+  awsvpc_sg    = "${module.ecs-cluster.awsvpc_sg}"
 }
