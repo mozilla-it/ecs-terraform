@@ -21,3 +21,9 @@ module "ecs-cluster" {
   availability_zone1 = "${var.availability_zone1}"
   availability_zone2 = "${var.availability_zone2}"
 }
+
+module "ecs-service" {
+  source       = "./modules/ecs-service"
+  service_name = "webops-redirects"
+  cluster_id   = "${module.ecs-cluster.cluster_id}"
+}
