@@ -14,5 +14,10 @@ provider "aws" {
 }
 
 module "ecs-cluster" {
-  source = "./modules/ecs-cluster"
+  source             = "./modules/ecs-cluster"
+  cluster_name       = "webops"
+  environment        = "stage"
+  region             = "${var.region}"
+  availability_zone1 = "${var.availability_zone1}"
+  availability_zone2 = "${var.availability_zone2}"
 }
