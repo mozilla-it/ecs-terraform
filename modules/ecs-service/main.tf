@@ -10,7 +10,8 @@ resource "aws_ecs_service" "ecs-service" {
 # Create a new task definition
 
 resource "aws_ecs_task_definition" "task-definition" {
-  family = "${var.service_name}"
+  family       = "${var.service_name}"
+  network_mode = "awsvpc"
 
   container_definitions = <<DEFINITION
 [
