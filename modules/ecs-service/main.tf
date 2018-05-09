@@ -6,16 +6,18 @@ resource "aws_ecs_service" "ecs-service" {
   task_definition = "${aws_ecs_task_definition.task-definition.arn}"
   desired_count   = 1
 
-  network_configuration {
-    subnets = ["${var.ecs_subnets}"]
-  }
+  #network_configuration {
+  #subnets = ["${var.ecs_subnets}"]
+  # }
 }
 
 # Create a new task definition
 
 resource "aws_ecs_task_definition" "task-definition" {
-  family       = "${var.service_name}"
-  network_mode = "awsvpc"
+  family = "${var.service_name}"
+
+  network_mode             = "bridge"
+  requires_compatibilities = ["EC2"]
 
   container_definitions = <<DEFINITION
 [
