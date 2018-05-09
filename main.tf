@@ -12,3 +12,7 @@ provider "aws" {
   shared_credentials_file = "~/.aws/credentials"
   profile                 = "${var.aws_profile}"
 }
+
+module "ecs-cluster" {
+  source = "./modules/ecs-cluster"
+}
