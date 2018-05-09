@@ -20,6 +20,15 @@ resource "aws_subnet" "ecs-subnet1" {
   availability_zone = "${var.availability_zone1}"
 }
 
+resource "aws_nat_gateway" "ecs-nat-gw" {
+  allocation_id = "${aws_eip.ecs-nat-eip.id}"
+  subnet_id     = "${aws_subnet.ecs-subnet1.id}"
+}
+
+resource "aws_eip" "ecs-nat-eip" {
+  vpc = true
+}
+
 resource "aws_subnet" "ecs-subnet2" {
   vpc_id            = "${aws_vpc.cluster-vpc.id}"
   cidr_block        = "10.0.3.0/24"
