@@ -10,7 +10,7 @@ resource "aws_route_table" "cluster-route" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.ecs-ig.id}"
+    gateway_id = "${aws_nat_gateway.ecs-nat-gw.id}"
   }
 }
 
