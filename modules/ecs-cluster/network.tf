@@ -56,3 +56,20 @@ resource "aws_security_group" "lb_sg" {
     delete = "5m"
   }
 }
+
+resource "aws_security_group" "ec2-sg" {
+  name        = "ec2-sg"
+  description = "Allows HTTP traffic"
+  vpc_id      = "${aws_vpc.cluster-vpc.id}"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  timeouts {
+    delete = "5m"
+  }
+}
