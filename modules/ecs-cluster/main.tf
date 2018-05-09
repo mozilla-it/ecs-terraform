@@ -64,4 +64,5 @@ resource "aws_instance" "ecs_instance" {
   subnet_id                   = "${aws_subnet.ecs-subnet1.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.ecs.id}"
   associate_public_ip_address = true
+  vpc_security_group_ids      = ["${aws_security_group.ec2-sg.id}"]
 }
