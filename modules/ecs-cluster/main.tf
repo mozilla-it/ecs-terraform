@@ -1,50 +1,14 @@
 # Create a new cluster
 
 resource "aws_ecs_cluster" "ecs-cluster" {
-  name = "${var.cluster_name}"
-}
-
-# Create ECS cluster service
-
-resource "aws_ecs_service" "redirects" {
-  name            = "redirects"
-  cluster         = "${aws_ecs_cluster.webops-cluster.id}"
-  task_definition = "${aws_ecs_task_definition.redirects.arn}"
-  desired_count   = 0
-}
-
-# ECR configuration
-
-resource "aws_ecr_repository" "webops-redirect-server" {
-  name = "webops-redirect-server"
+  name = "${var.cluster_name}-${var.environment}-cluster"
 }
 
 # Network configuration
 
-resource "aws_lb" "ecs-redirects-alb" {
-  name            = "ecs-lb-tf"
-  internal        = false
-  security_groups = ["${aws_security_group.redirects_lb_sg.id}"]
-  subnets         = ["${aws_subnet.ecs-redirects-subnet1.id}", "${aws_subnet.ecs-redirects-subnet2.id}"]
-
-  enable_deletion_protection = false
-
-  tags {
-    Project        = "redirects-ecs"
-    Environment    = "dev"
-    TechnicalOwner = "infra-webops@mozilla.com"
-  }
-}
-
 resource "aws_vpc" "ecs-redirects-vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
-
-  tags {
-    Project        = "redirects-ecs"
-    Environment    = "dev"
-    TechnicalOwner = "infra-webops@mozilla.com"
-  }
 }
 
 resource "aws_route_table" "redirects-rt-external" {
@@ -54,24 +18,12 @@ resource "aws_route_table" "redirects-rt-external" {
     cidr_block = "0.0.0.0/0"
     gateway_id = "${aws_internet_gateway.ecs-redirects-ig.id}"
   }
-
-  tags {
-    Project        = "redirects-ecs"
-    Environment    = "dev"
-    TechnicalOwner = "infra-webops@mozilla.com"
-  }
 }
 
 resource "aws_subnet" "ecs-redirects-subnet1" {
   vpc_id            = "${aws_vpc.ecs-redirects-vpc.id}"
   cidr_block        = "10.0.2.0/24"
   availability_zone = "${var.availability_zone1}"
-
-  tags {
-    Project        = "redirects-ecs"
-    Environment    = "dev"
-    TechnicalOwner = "infra-webops@mozilla.com"
-  }
 }
 
 resource "aws_subnet" "ecs-redirects-subnet2" {
