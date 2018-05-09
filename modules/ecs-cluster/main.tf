@@ -59,7 +59,7 @@ resource "aws_instance" "ecs_instance" {
   count = "2"
 
   ami                         = "${data.aws_ami.latest.id}"
-  instance_type               = "t2.micro"
+  instance_type               = "t2.medium"
   user_data                   = "${data.template_file.user_data.rendered}"
   subnet_id                   = "${aws_subnet.ecs-subnet1.id}"
   iam_instance_profile        = "${aws_iam_instance_profile.ecs.id}"

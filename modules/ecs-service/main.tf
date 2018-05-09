@@ -4,7 +4,7 @@ resource "aws_ecs_service" "ecs-service" {
   name            = "${var.service_name}"
   cluster         = "${var.cluster_id}"
   task_definition = "${aws_ecs_task_definition.task-definition.arn}"
-  desired_count   = 1
+  desired_count   = 3
 
   network_configuration {
     subnets         = ["${var.ecs_subnets}"]
