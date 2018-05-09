@@ -13,6 +13,37 @@ data "template_file" "user_data" {
   }
 }
 
+resource "aws_iam_role" "ecs" {
+  name = "ecs"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_policy_attachment" "ecs_for_ec2" {
+  name       = "ecs-for-ec2"
+  roles      = ["${aws_iam_role.ecs.id}"]
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "ecs" {
+  name  = "ecs-profile"
+  roles = ["${aws_iam_role.ecs.name}"]
+}
+
 data "aws_ami" "latest" {
   most_recent = true
 
@@ -27,8 +58,9 @@ data "aws_ami" "latest" {
 resource "aws_instance" "ecs_instance" {
   count = "2"
 
-  ami           = "${data.aws_ami.latest.id}"
-  instance_type = "t2.micro"
-  user_data     = "${data.template_file.user_data.rendered}"
-  subnet_id     = "${aws_subnet.ecs-subnet1.id}"
+  ami                  = "${data.aws_ami.latest.id}"
+  instance_type        = "t2.micro"
+  user_data            = "${data.template_file.user_data.rendered}"
+  subnet_id            = "${aws_subnet.ecs-subnet1.id}"
+  iam_instance_profile = "${aws_iam_instance_profile.ecs.id}"
 }
